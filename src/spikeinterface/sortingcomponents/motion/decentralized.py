@@ -536,11 +536,16 @@ def compute_global_displacement(
         idx = np.ones(A.shape[0], dtype=bool)
 
         # TODO: this is already soft_weights
+        import gc
         xrange = trange if progress_bar else range
         for i in xrange(lsqr_robust_n_iter):
             p = lsqr(A[idx].multiply(W[idx]), V[idx] * W[idx][:, 0])[0]
             idx = np.nonzero(np.abs(zscore(A @ p - V)) <= robust_regression_sigma)
+            import gc
+            gc.collect()
         displacement = p
+        gc.collect()
+        print('temporary memory cleared')
 
     elif convergence_method == "lsmr":
         import gc
